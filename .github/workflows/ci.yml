@@ -1,0 +1,40 @@
+name: "CI - Tests"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  valid-title:
+    name: valid-title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Valid title passes
+        uses: ./validate-title
+        with:
+          text: "✨ feat: validate standalone wrapper"
+
+  invalid-title:
+    name: invalid-title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: invalid
+        name: Invalid title fails
+        continue-on-error: true
+        uses: ./validate-title
+        with:
+          text: "feat: missing emoji"
+
+      - name: Assert invalid title failed
+        if: steps.invalid.outcome != 'failure'
+        run: |
+          echo "Expected invalid title validation to fail."
+          exit 1
