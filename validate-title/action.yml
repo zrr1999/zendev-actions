@@ -1,0 +1,29 @@
+name: Validate PR title
+description: Validate a PR title against zendev emoji commit conventions via uvx.
+
+inputs:
+  text:
+    description: Text to validate (for example github.event.pull_request.title).
+    required: true
+  zendev-ref:
+    description: Git ref used by uvx --from git+https://github.com/zrr1999/zendev.git@<ref>.
+    required: false
+    default: "02db2d50af0340bd856568615e3af080dcd66fb2"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - uses: astral-sh/setup-uv@v6
+
+    - name: Validate title
+      shell: bash
+      env:
+        INPUT_TEXT: ${{ inputs.text }}
+        ZENDEV_REF: ${{ inputs.zendev-ref }}
+      run: |
+        uvx --from "git+https://github.com/zrr1999/zendev.git@${ZENDEV_REF}" \
+          zendev-validate-title "${INPUT_TEXT}"
