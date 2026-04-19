@@ -12,7 +12,7 @@ inputs:
   zendev-ref:
     description: Git ref used by uvx --from git+https://github.com/zrr1999/zendev.git@<ref>.
     required: false
-    default: "34ae1c6"
+    default: "34ae1c613415f482f486716d3edb8bd4fe16a645"
 
 runs:
   using: composite
