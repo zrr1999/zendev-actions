@@ -1,0 +1,34 @@
+name: Validate PR body
+description: Validate a PR body against required H2 section headings via uvx.
+
+inputs:
+  body:
+    description: PR body text (for example github.event.pull_request.body).
+    required: true
+  template:
+    description: Path to the PR template file relative to the repo root.
+    required: false
+    default: ".github/pull_request_template.md"
+  zendev-ref:
+    description: Git ref used by uvx --from git+https://github.com/zrr1999/zendev.git@<ref>.
+    required: false
+    default: "34ae1c6"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - uses: astral-sh/setup-uv@v6
+
+    - name: Validate body
+      shell: bash
+      env:
+        INPUT_BODY: ${{ inputs.body }}
+        INPUT_TEMPLATE: ${{ inputs.template }}
+        ZENDEV_REF: ${{ inputs.zendev-ref }}
+      run: |
+        uvx --from "git+https://github.com/zrr1999/zendev.git@${ZENDEV_REF}" \
+          zendev-validate-body "${INPUT_BODY}" --template "${INPUT_TEMPLATE}"
